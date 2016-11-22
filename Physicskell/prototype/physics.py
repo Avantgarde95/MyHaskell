@@ -84,11 +84,47 @@ class Object(object):
         # re-initiallize the total force
         self.accel_x, self.accel_y = 0, 0
 
+    # override this!
+    def collide_point(self, other):
+        return False
+
+    # override this!
+    def collide_rectangle(self, other):
+        return False
+
+    # override this!
+    def collide_circle(self, other):
+        return False
+
+    def collide(self, other):
+        if not (self.is_collidable and other.is_collidable):
+            return False
+
+        t = other.type
+
+        if t == 'point':
+            return self.collide_point(other)
+        elif t == 'rectangle':
+            return self.collide_rectangle(other)
+        elif t == 'circle':
+            return self.collide_circle(other)
+        else:
+            return False
+
 class Point(Object):
     def __init__(self, *args, **kwargs):
         super(Point, self).__init__(*args, **kwargs)
         self.type = 'point'
         self.pixels = [(0, 0)]
+
+    def collide_point(self, other):
+        return (self.x == other.x) and (self.y == other.y)
+
+    def collide_rectangle(self, other):
+        return False
+
+    def collide_circle(self, other):
+        return False
 
 class Rectangle(Object):
     def __init__(self, width, height, *args, **kwargs):
